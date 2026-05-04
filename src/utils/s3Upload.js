@@ -1,30 +1,35 @@
-import {
-  S3Client,
-  PutObjectCommand
-} from "@aws-sdk/client-s3";
-
-const s3 = new S3Client({
-  region: import.meta.env.VITE_AWS_REGION,
-  credentials: {
-    accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY,
-    secretAccessKey: import.meta.env.VITE_AWS_SECRET_KEY
-  },
-
-  // 🔥 IMPORTANT FIX
-  requestChecksumCalculation: "WHEN_REQUIRED"
-});
-
 export const uploadToS3 = async (file) => {
-  const fileName = `${Date.now()}-${file.name}`;
+  try {
+    // 1. Get signed URL from your API
+    const res = await fetch(
+      "https://c8hqbomoi4.execute-api.ap-southeast-1.amazonaws.com/upload",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          fileName: `${Date.now()}-${file.name}`,
+          fileType: file.type
+        })
+      }
+    );
 
-  const command = new PutObjectCommand({
-    Bucket: import.meta.env.VITE_S3_BUCKET,
-    Key: fileName,
-    Body: file,
-    ContentType: file.type
-  });
+    const data = await res.json();
 
-  await s3.send(command);
+    // 2. Upload directly to S3 using signed URL
+    await fetch(data.uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type
+      },
+      body: file
+    });
 
-  return `https://${import.meta.env.VITE_S3_BUCKET}.s3.${import.meta.env.VITE_AWS_REGION}.amazonaws.com/${fileName}`;
+    // 3. Return public URL
+    return data.fileUrl;
+
+  } catch (err) {
+    console.error("UPLOAD ERROR:", err);
+  }
 };
