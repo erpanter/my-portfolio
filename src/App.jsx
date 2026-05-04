@@ -8,7 +8,9 @@ import Login from "./pages/Login";
 function App() {
 
   // ADMIN AUTH
-  const isAdmin = localStorage.getItem("isAdmin") === "true";
+  const [isAdmin, setIsAdmin] = useState(
+    localStorage.getItem("isAdmin") === "true"
+  );
 
   // PROJECTS STATE
   const [projects, setProjects] = useState(() => {
@@ -74,9 +76,10 @@ function App() {
               setProjects={setProjects}
               photos={photos}
               setPhotos={setPhotos}
+              setIsAdmin={setIsAdmin}
             />
           ) : (
-            <Login />
+            <Login setIsAdmin={setIsAdmin} />
           )
         }
       />

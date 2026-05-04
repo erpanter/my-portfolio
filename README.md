@@ -3,7 +3,7 @@
 A full-stack portfolio website with a custom admin panel and secure cloud uploads.
 
 ## Live
-https://your-amplify-url.amplifyapp.com
+https://main.d3dtch9735w75n.amplifyapp.com/
 
 ## Stack
 React (Vite), TailwindCSS, AWS Lambda, API Gateway, S3, Amplify

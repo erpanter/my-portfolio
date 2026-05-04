@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { uploadToS3 } from "../utils/s3Upload";
 
-export default function Admin({ projects, setProjects, photos, setPhotos }) {
+export default function Admin({ projects, setProjects, photos, setPhotos, props }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [fullDescription, setFullDescription] = useState("");
@@ -107,6 +107,7 @@ export default function Admin({ projects, setProjects, photos, setPhotos }) {
         onClick={() => {
           localStorage.removeItem("isAdmin");
           window.location.href = "/";
+          setIsAdmin(false);
         }}
         className="mb-6 bg-red-500 px-4 py-2 rounded"
       >
