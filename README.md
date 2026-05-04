@@ -1,16 +1,20 @@
-# React + Vite
+# Personal Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack portfolio website with a custom admin panel and secure cloud uploads.
 
-Currently, two official plugins are available:
+## Live
+https://your-amplify-url.amplifyapp.com
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
+React (Vite), TailwindCSS, AWS Lambda, API Gateway, S3, Amplify
 
-## React Compiler
+## Key Features (So Far)
+- Admin panel to manage projects and photos  
+- Secure image uploads using signed URLs (no exposed credentials)  
+- Responsive UI with interactive project views  
+- Serverless backend architecture  
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Architecture
+``` id="l3x2fa"
+Frontend → API Gateway → Lambda → S3
+```

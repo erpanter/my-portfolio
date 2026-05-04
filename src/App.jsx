@@ -3,8 +3,12 @@ import { useState, useEffect } from "react";
 
 import Home from "./pages/Home";
 import Admin from "./pages/Admin";
+import Login from "./pages/Login";
 
 function App() {
+
+  // ADMIN AUTH
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
 
   // PROJECTS STATE
   const [projects, setProjects] = useState(() => {
@@ -13,26 +17,26 @@ function App() {
     return savedProjects
       ? JSON.parse(savedProjects)
       : [
-          {
-            id: 1,
-            title: "AI Meeting Summarizer",
-            description: "Summarizes meeting transcripts using NLP",
-            fullDescription:
-              "Built an AI-powered meeting summarization system using datasets such as AMI and SAMSum. The system processes transcripts and generates concise summaries, improving efficiency in reviewing long discussions. Explored natural language processing techniques and worked with real-world datasets.",
-            image: "https://via.placeholder.com/300",
-            tech: ["Python", "NLP", "AI"]
-          },
+        {
+          id: 1,
+          title: "AI Meeting Summarizer",
+          description: "Summarizes meeting transcripts using NLP",
+          fullDescription:
+            "Built an AI-powered meeting summarization system using datasets such as AMI and SAMSum. The system processes transcripts and generates concise summaries, improving efficiency in reviewing long discussions. Explored natural language processing techniques and worked with real-world datasets.",
+          image: "https://via.placeholder.com/300",
+          tech: ["Python", "NLP", "AI"]
+        },
 
-          {
-            id: 2,
-            title: "Movie App",
-            description: "Movie browsing app using TMDB API",
-            fullDescription:
-              "Developed a mobile application using Kotlin and Android Studio that integrates TheMovieDB API. Features include viewing popular, top-rated, and upcoming movies, detailed movie pages, and user-friendly UI built with modern Android architecture.",
-            image: "https://via.placeholder.com/300",
-            tech: ["Kotlin", "Android", "API"]
-          }
-        ];
+        {
+          id: 2,
+          title: "Movie App",
+          description: "Movie browsing app using TMDB API",
+          fullDescription:
+            "Developed a mobile application using Kotlin and Android Studio that integrates TheMovieDB API. Features include viewing popular, top-rated, and upcoming movies, detailed movie pages, and user-friendly UI built with modern Android architecture.",
+          image: "https://via.placeholder.com/300",
+          tech: ["Kotlin", "Android", "API"]
+        }
+      ];
   });
 
   // PHOTOS STATE
@@ -56,31 +60,26 @@ function App() {
 
   return (
     <Routes>
-
-      {/* HOME */}
       <Route
         path="/"
-        element={
-          <Home
-            projects={projects}
-            photos={photos}
-          />
-        }
+        element={<Home projects={projects} photos={photos} />}
       />
 
-      {/* ADMIN */}
       <Route
         path="/admin"
         element={
-          <Admin
-            projects={projects}
-            setProjects={setProjects}
-            photos={photos}
-            setPhotos={setPhotos}
-          />
+          isAdmin ? (
+            <Admin
+              projects={projects}
+              setProjects={setProjects}
+              photos={photos}
+              setPhotos={setPhotos}
+            />
+          ) : (
+            <Login />
+          )
         }
       />
-
     </Routes>
   );
 }

@@ -12,55 +12,55 @@ export default function Admin({ projects, setProjects, photos, setPhotos }) {
 
   // ADD OR UPDATE PROJECT
   const handleSaveProject = async () => {
-  try {
-    if (!title || !description || !fullDescription) return;
+    try {
+      if (!title || !description || !fullDescription) return;
 
-    let imageUrl = null;
+      let imageUrl = null;
 
-    if (projectImage) {
-      console.log("Uploading project image...");
-      imageUrl = await uploadToS3(projectImage);
-      console.log("Uploaded:", imageUrl);
-    }
+      if (projectImage) {
+        console.log("Uploading project image...");
+        imageUrl = await uploadToS3(projectImage);
+        console.log("Uploaded:", imageUrl);
+      }
 
-    if (editingId) {
-      setProjects((prev) =>
-        prev.map((proj) =>
-          proj.id === editingId
-            ? {
+      if (editingId) {
+        setProjects((prev) =>
+          prev.map((proj) =>
+            proj.id === editingId
+              ? {
                 ...proj,
                 title,
                 description,
                 fullDescription,
                 image: imageUrl || proj.image
               }
-            : proj
-        )
-      );
-    } else {
-      const newProject = {
-        id: Date.now(),
-        title,
-        description,
-        fullDescription,
-        image: imageUrl
-      };
+              : proj
+          )
+        );
+      } else {
+        const newProject = {
+          id: Date.now(),
+          title,
+          description,
+          fullDescription,
+          image: imageUrl
+        };
 
-      setProjects((prev) => [...prev, newProject]);
+        setProjects((prev) => [...prev, newProject]);
+      }
+
+      // RESET
+      setTitle("");
+      setDescription("");
+      setFullDescription("");
+      setProjectImage(null);
+      setEditingId(null);
+
+      console.log("Project saved!");
+    } catch (err) {
+      console.error("PROJECT ERROR:", err);
     }
-
-    // RESET
-    setTitle("");
-    setDescription("");
-    setFullDescription("");
-    setProjectImage(null);
-    setEditingId(null);
-
-    console.log("Project saved!");
-  } catch (err) {
-    console.error("PROJECT ERROR:", err);
-  }
-};
+  };
 
   // DELETE PROJECT
   const handleDeleteProject = (id) => {
@@ -77,22 +77,22 @@ export default function Admin({ projects, setProjects, photos, setPhotos }) {
 
   // ADD PHOTO
   const handleAddPhoto = async () => {
-  try {
-    if (!photoImage) return;
+    try {
+      if (!photoImage) return;
 
-    console.log("Uploading photo...");
+      console.log("Uploading photo...");
 
-    const imageUrl = await uploadToS3(photoImage);
+      const imageUrl = await uploadToS3(photoImage);
 
-    console.log("Uploaded:", imageUrl);
+      console.log("Uploaded:", imageUrl);
 
-    setPhotos((prev) => [...prev, imageUrl]);
+      setPhotos((prev) => [...prev, imageUrl]);
 
-    setPhotoImage(null);
-  } catch (err) {
-    console.error("PHOTO ERROR:", err);
-  }
-};
+      setPhotoImage(null);
+    } catch (err) {
+      console.error("PHOTO ERROR:", err);
+    }
+  };
 
   // DELETE PHOTO
   const handleDeletePhoto = (index) => {
@@ -103,9 +103,15 @@ export default function Admin({ projects, setProjects, photos, setPhotos }) {
     <div className="min-h-screen bg-black text-white p-10">
 
       {/* BACK */}
-      <Link to="/" className="inline-block mb-8 text-gray-400 hover:text-white">
-        ← Back to Home
-      </Link>
+      <button
+        onClick={() => {
+          localStorage.removeItem("isAdmin");
+          window.location.href = "/";
+        }}
+        className="mb-6 bg-red-500 px-4 py-2 rounded"
+      >
+        Logout
+      </button>
 
       <h1 className="text-3xl font-bold mb-10">Admin Panel</h1>
 
