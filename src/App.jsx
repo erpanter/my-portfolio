@@ -7,6 +7,8 @@ import Login from "./pages/Login";
 
 function App() {
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   // ADMIN AUTH
   const [isAdmin, setIsAdmin] = useState(
     localStorage.getItem("isAdmin") === "true"
@@ -59,6 +61,46 @@ function App() {
   useEffect(() => {
     localStorage.setItem("photos", JSON.stringify(photos));
   }, [photos]);
+
+  useEffect(() => {
+
+    const fetchContent = async () => {
+
+      try {
+
+        const res = await fetch(
+          `${API_URL}/content`
+        );
+
+        const data = await res.json();
+
+        // PROJECTS
+        const loadedProjects = data.filter(
+          (item) => item.type === "project"
+        );
+
+        // PHOTOS
+        const loadedPhotos = data
+          .filter((item) => item.type === "photo")
+          .map((item) => item.url);
+
+        // ONLY replace if backend has data
+        if (loadedProjects.length > 0) {
+          setProjects(loadedProjects);
+        }
+
+        if (loadedPhotos.length > 0) {
+          setPhotos(loadedPhotos);
+        }
+
+      } catch (err) {
+        console.error("FETCH ERROR:", err);
+      }
+    };
+
+    fetchContent();
+
+  }, []);
 
   return (
     <Routes>

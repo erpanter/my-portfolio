@@ -46,6 +46,20 @@ export default function Admin({ projects, setProjects, photos, setPhotos, props 
           image: imageUrl
         };
 
+        await fetch(
+          `${import.meta.env.VITE_API_URL}/project`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              ...newProject,
+              type: "project"
+            })
+          }
+        );
+
         setProjects((prev) => [...prev, newProject]);
       }
 
@@ -85,6 +99,23 @@ export default function Admin({ projects, setProjects, photos, setPhotos, props 
       const imageUrl = await uploadToS3(photoImage);
 
       console.log("Uploaded:", imageUrl);
+
+      const photoItem = {
+        id: Date.now().toString(),
+        type: "photo",
+        url: imageUrl
+      };
+
+      await fetch(
+        `${import.meta.env.VITE_API_URL}/photo`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(photoItem)
+        }
+      );
 
       setPhotos((prev) => [...prev, imageUrl]);
 
