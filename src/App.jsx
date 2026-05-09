@@ -8,7 +8,6 @@ import Login from "./pages/Login";
 const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
-  console.log("API URL:", import.meta.env.VITE_API_URL);
   // ADMIN AUTH
   const [isAdmin, setIsAdmin] = useState(
     localStorage.getItem("isAdmin") === "true"
