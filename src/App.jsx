@@ -5,9 +5,9 @@ import Home from "./pages/Home";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 
-function App() {
+const API_URL = import.meta.env.VITE_API_URL;
 
-  const API_URL = import.meta.env.VITE_API_URL;
+function App() {
 
   // ADMIN AUTH
   const [isAdmin, setIsAdmin] = useState(
