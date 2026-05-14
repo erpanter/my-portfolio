@@ -166,10 +166,10 @@ export default function Home({ projects, photos }) {
         <h2 className="text-3xl font-bold mb-6">Photography 📸</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {photos.map((src, index) => (
+          {photos.map((photo, index) => (
             <div key={index} className="overflow-hidden rounded-xl">
               <img
-                src={src}
+                src={photo.url}
                 alt="photo"
                 className="w-full h-auto rounded-xl transition-transform duration-300 ease-out hover:scale-105"
               />

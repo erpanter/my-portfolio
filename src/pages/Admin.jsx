@@ -222,7 +222,7 @@ export default function Admin({
       }
 
       // Update frontend state
-      setPhotos((prev) => [...prev, imageUrl]);
+      setPhotos((prev) => [...prev, photoItem]);
 
       // Reset
       setPhotoImage(null);
@@ -240,12 +240,19 @@ export default function Admin({
   // =========================
   // DELETE PHOTO
   // =========================
-  const handleDeletePhoto = (index) => {
+  const handleDeletePhoto = async (id) => {
 
-    setPhotos((prev) =>
-      prev.filter((_, i) => i !== index)
-    );
-  };
+  await fetch(
+    `${import.meta.env.VITE_API_URL}/photo/${id}`,
+    {
+      method: "DELETE"
+    }
+  );
+
+  setPhotos((prev) =>
+    prev.filter((photo) => photo.id !== id)
+  );
+};
 
   // =========================
   // LOGOUT
@@ -433,7 +440,7 @@ export default function Admin({
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
-          {photos.map((src, index) => (
+          {photos.map((photo, index) => (
 
             <div
               key={index}
@@ -441,12 +448,12 @@ export default function Admin({
             >
 
               <img
-                src={src}
+                src={photo.url}
                 className="rounded w-full"
               />
 
               <button
-                onClick={() => handleDeletePhoto(index)}
+                onClick={() => handleDeletePhoto(photo.id)}
                 className="absolute top-2 right-2 bg-red-500 px-2 py-1 text-xs rounded"
               >
                 ✕

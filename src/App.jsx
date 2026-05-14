@@ -36,9 +36,9 @@ function App() {
         );
 
         // PHOTOS
-        const loadedPhotos = data
-          .filter((item) => item.type === "photo")
-          .map((item) => item.url);
+        const loadedPhotos = data.filter(
+          (item) => item.type === "photo"
+        );
 
         // ONLY replace if backend has data
         if (loadedProjects.length > 0) {
