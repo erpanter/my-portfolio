@@ -1,98 +1,168 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { uploadToS3 } from "../utils/s3Upload";
 
-export default function Admin({ projects, setProjects, photos, setPhotos, props }) {
+export default function Admin({
+  projects,
+  setProjects,
+  photos,
+  setPhotos,
+  setIsAdmin
+}) {
+
+  const navigate = useNavigate();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [fullDescription, setFullDescription] = useState("");
+
   const [projectImage, setProjectImage] = useState(null);
   const [photoImage, setPhotoImage] = useState(null);
+
   const [editingId, setEditingId] = useState(null);
 
-  // ADD OR UPDATE PROJECT
+  const [loading, setLoading] = useState(false);
+
+  // =========================
+  // ADD / UPDATE PROJECT
+  // =========================
   const handleSaveProject = async () => {
+
     try {
-      if (!title || !description || !fullDescription) return;
+
+      if (!title || !description || !fullDescription) {
+        return;
+      }
+
+      setLoading(true);
 
       let imageUrl = null;
 
+      // Upload image if exists
       if (projectImage) {
+
         console.log("Uploading project image...");
+
         imageUrl = await uploadToS3(projectImage);
+
         console.log("Uploaded:", imageUrl);
       }
 
+      // =========================
+      // EDIT EXISTING PROJECT
+      // =========================
+      // TODO:
+      // Add backend PUT route later
       if (editingId) {
+
         setProjects((prev) =>
           prev.map((proj) =>
             proj.id === editingId
               ? {
-                ...proj,
-                title,
-                description,
-                fullDescription,
-                image: imageUrl || proj.image
-              }
+                  ...proj,
+                  title,
+                  description,
+                  fullDescription,
+                  image: imageUrl || proj.image
+                }
               : proj
           )
         );
+
       } else {
+
+        // =========================
+        // CREATE NEW PROJECT
+        // =========================
         const newProject = {
-          id: Date.now(),
+          id: crypto.randomUUID(),
+          type: "project",
           title,
           description,
           fullDescription,
-          image: imageUrl
+          image: imageUrl || ""
         };
 
-        await fetch(
+        const response = await fetch(
           `${import.meta.env.VITE_API_URL}/project`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-              ...newProject,
-              type: "project"
-            })
+            body: JSON.stringify(newProject)
           }
         );
 
+        const data = await response.json();
+
+        console.log("PROJECT RESPONSE:", data);
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to save project");
+        }
+
+        // Update frontend state
         setProjects((prev) => [...prev, newProject]);
       }
 
-      // RESET
+      // =========================
+      // RESET FORM
+      // =========================
       setTitle("");
       setDescription("");
       setFullDescription("");
+
       setProjectImage(null);
+
       setEditingId(null);
 
       console.log("Project saved!");
+
     } catch (err) {
+
       console.error("PROJECT ERROR:", err);
+
+    } finally {
+
+      setLoading(false);
     }
   };
 
+  // =========================
   // DELETE PROJECT
+  // =========================
+  // TODO:
+  // Add backend DELETE route later
   const handleDeleteProject = (id) => {
-    setProjects((prev) => prev.filter((proj) => proj.id !== id));
+
+    setProjects((prev) =>
+      prev.filter((proj) => proj.id !== id)
+    );
   };
 
-  // EDIT PROJECT (prefill form)
+  // =========================
+  // EDIT PROJECT
+  // =========================
   const handleEditProject = (proj) => {
+
     setTitle(proj.title);
     setDescription(proj.description);
     setFullDescription(proj.fullDescription);
+
     setEditingId(proj.id);
   };
 
+  // =========================
   // ADD PHOTO
+  // =========================
   const handleAddPhoto = async () => {
+
     try {
+
       if (!photoImage) return;
+
+      setLoading(true);
 
       console.log("Uploading photo...");
 
@@ -101,12 +171,12 @@ export default function Admin({ projects, setProjects, photos, setPhotos, props 
       console.log("Uploaded:", imageUrl);
 
       const photoItem = {
-        id: Date.now().toString(),
+        id: crypto.randomUUID(),
         type: "photo",
         url: imageUrl
       };
 
-      await fetch(
+      const response = await fetch(
         `${import.meta.env.VITE_API_URL}/photo`,
         {
           method: "POST",
@@ -117,38 +187,74 @@ export default function Admin({ projects, setProjects, photos, setPhotos, props 
         }
       );
 
+      const data = await response.json();
+
+      console.log("PHOTO RESPONSE:", data);
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to save photo");
+      }
+
+      // Update frontend state
       setPhotos((prev) => [...prev, imageUrl]);
 
+      // Reset
       setPhotoImage(null);
+
     } catch (err) {
+
       console.error("PHOTO ERROR:", err);
+
+    } finally {
+
+      setLoading(false);
     }
   };
 
+  // =========================
   // DELETE PHOTO
+  // =========================
+  // TODO:
+  // Add backend DELETE route later
   const handleDeletePhoto = (index) => {
-    setPhotos((prev) => prev.filter((_, i) => i !== index));
+
+    setPhotos((prev) =>
+      prev.filter((_, i) => i !== index)
+    );
+  };
+
+  // =========================
+  // LOGOUT
+  // =========================
+  const handleLogout = () => {
+
+    localStorage.removeItem("isAdmin");
+
+    setIsAdmin(false);
+
+    navigate("/");
   };
 
   return (
     <div className="min-h-screen bg-black text-white p-10">
 
-      {/* BACK */}
+      {/* LOGOUT */}
       <button
-        onClick={() => {
-          localStorage.removeItem("isAdmin");
-          window.location.href = "/";
-          setIsAdmin(false);
-        }}
-        className="mb-6 bg-red-500 px-4 py-2 rounded"
+        onClick={handleLogout}
+        className="mb-6 bg-red-500 px-4 py-2 rounded hover:opacity-80 transition"
       >
         Logout
       </button>
 
-      <h1 className="text-3xl font-bold mb-10">Admin Panel</h1>
+      <h1 className="text-3xl font-bold mb-10">
+        Admin Panel
+      </h1>
 
+      {/* ========================= */}
       {/* PROJECT FORM */}
+      {/* ========================= */}
       <div className="mb-16">
+
         <h2 className="text-xl font-semibold mb-4">
           {editingId ? "Edit Project" : "Add Project"}
         </h2>
@@ -179,7 +285,9 @@ export default function Admin({ projects, setProjects, photos, setPhotos, props 
           <input
             type="file"
             accept="image/*"
-            onChange={(e) => setProjectImage(e.target.files[0])}
+            onChange={(e) =>
+              setProjectImage(e.target.files[0])
+            }
           />
 
           {projectImage && (
@@ -191,25 +299,48 @@ export default function Admin({ projects, setProjects, photos, setPhotos, props 
 
           <button
             onClick={handleSaveProject}
-            className="bg-white text-black py-2 rounded hover:opacity-80"
+            disabled={loading}
+            className="bg-white text-black py-2 rounded hover:opacity-80 disabled:opacity-50"
           >
-            {editingId ? "Update Project" : "Add Project"}
+            {loading
+              ? "Saving..."
+              : editingId
+              ? "Update Project"
+              : "Add Project"}
           </button>
 
         </div>
       </div>
 
-      {/* EXISTING PROJECTS */}
+      {/* ========================= */}
+      {/* PROJECT LIST */}
+      {/* ========================= */}
       <div className="mb-16">
-        <h2 className="text-xl font-semibold mb-4">Manage Projects</h2>
+
+        <h2 className="text-xl font-semibold mb-4">
+          Manage Projects
+        </h2>
 
         <div className="grid md:grid-cols-2 gap-4">
+
           {projects.map((proj) => (
-            <div key={proj.id} className="bg-gray-900 p-4 rounded-xl">
-              <img src={proj.image} className="h-32 w-full object-cover rounded mb-2" />
-              <h3 className="font-semibold">{proj.title}</h3>
+
+            <div
+              key={proj.id}
+              className="bg-gray-900 p-4 rounded-xl"
+            >
+
+              <img
+                src={proj.image}
+                className="h-32 w-full object-cover rounded mb-2"
+              />
+
+              <h3 className="font-semibold">
+                {proj.title}
+              </h3>
 
               <div className="flex gap-2 mt-3">
+
                 <button
                   onClick={() => handleEditProject(proj)}
                   className="px-3 py-1 bg-blue-500 rounded"
@@ -223,22 +354,30 @@ export default function Admin({ projects, setProjects, photos, setPhotos, props 
                 >
                   Delete
                 </button>
+
               </div>
             </div>
           ))}
         </div>
       </div>
 
+      {/* ========================= */}
       {/* PHOTO UPLOAD */}
+      {/* ========================= */}
       <div className="mb-10">
-        <h2 className="text-xl font-semibold mb-4">Add Photography</h2>
+
+        <h2 className="text-xl font-semibold mb-4">
+          Add Photography
+        </h2>
 
         <div className="flex flex-col gap-4 max-w-lg">
 
           <input
             type="file"
             accept="image/*"
-            onChange={(e) => setPhotoImage(e.target.files[0])}
+            onChange={(e) =>
+              setPhotoImage(e.target.files[0])
+            }
           />
 
           {photoImage && (
@@ -250,22 +389,37 @@ export default function Admin({ projects, setProjects, photos, setPhotos, props 
 
           <button
             onClick={handleAddPhoto}
-            className="bg-white text-black py-2 rounded"
+            disabled={loading}
+            className="bg-white text-black py-2 rounded hover:opacity-80 disabled:opacity-50"
           >
-            Add Photo
+            {loading ? "Uploading..." : "Add Photo"}
           </button>
 
         </div>
       </div>
 
-      {/* PHOTO GALLERY (DELETE) */}
+      {/* ========================= */}
+      {/* PHOTO GALLERY */}
+      {/* ========================= */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">Manage Photos</h2>
+
+        <h2 className="text-xl font-semibold mb-4">
+          Manage Photos
+        </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
           {photos.map((src, index) => (
-            <div key={index} className="relative">
-              <img src={src} className="rounded w-full" />
+
+            <div
+              key={index}
+              className="relative"
+            >
+
+              <img
+                src={src}
+                className="rounded w-full"
+              />
 
               <button
                 onClick={() => handleDeletePhoto(index)}
@@ -273,6 +427,7 @@ export default function Admin({ projects, setProjects, photos, setPhotos, props 
               >
                 ✕
               </button>
+
             </div>
           ))}
         </div>
