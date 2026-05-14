@@ -51,20 +51,44 @@ export default function Admin({
       // =========================
       // EDIT EXISTING PROJECT
       // =========================
-      // TODO:
-      // Add backend PUT route later
       if (editingId) {
 
+        const updatedProject = {
+          id: editingId,
+          type: "project",
+          title,
+          description,
+          fullDescription,
+          image:
+            imageUrl ||
+            projects.find((p) => p.id === editingId)?.image ||
+            ""
+        };
+
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/project`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updatedProject)
+          }
+        );
+
+        const data = await response.json();
+
+        console.log("UPDATE RESPONSE:", data);
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to update project");
+        }
+
+        // Update frontend state
         setProjects((prev) =>
           prev.map((proj) =>
             proj.id === editingId
-              ? {
-                  ...proj,
-                  title,
-                  description,
-                  fullDescription,
-                  image: imageUrl || proj.image
-                }
+              ? updatedProject
               : proj
           )
         );
@@ -132,18 +156,20 @@ export default function Admin({
   // =========================
   // DELETE PROJECT
   // =========================
-  // TODO:
-  // Add backend DELETE route later
-  const handleDeleteProject = (id) => {
+  const handleDeleteProject = async (id) => {
+
+    await fetch(
+      `${import.meta.env.VITE_API_URL}/project/${id}`,
+      {
+        method: "DELETE"
+      }
+    );
 
     setProjects((prev) =>
       prev.filter((proj) => proj.id !== id)
     );
   };
 
-  // =========================
-  // EDIT PROJECT
-  // =========================
   const handleEditProject = (proj) => {
 
     setTitle(proj.title);
@@ -214,8 +240,6 @@ export default function Admin({
   // =========================
   // DELETE PHOTO
   // =========================
-  // TODO:
-  // Add backend DELETE route later
   const handleDeletePhoto = (index) => {
 
     setPhotos((prev) =>
@@ -305,8 +329,8 @@ export default function Admin({
             {loading
               ? "Saving..."
               : editingId
-              ? "Update Project"
-              : "Add Project"}
+                ? "Update Project"
+                : "Add Project"}
           </button>
 
         </div>
