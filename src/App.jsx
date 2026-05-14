@@ -13,53 +13,10 @@ function App() {
     localStorage.getItem("isAdmin") === "true"
   );
 
-  // PROJECTS STATE
-  const [projects, setProjects] = useState(() => {
-    const savedProjects = localStorage.getItem("projects");
-
-    return savedProjects
-      ? JSON.parse(savedProjects)
-      : [
-        {
-          id: 1,
-          title: "AI Meeting Summarizer",
-          description: "Summarizes meeting transcripts using NLP",
-          fullDescription:
-            "Built an AI-powered meeting summarization system using datasets such as AMI and SAMSum. The system processes transcripts and generates concise summaries, improving efficiency in reviewing long discussions. Explored natural language processing techniques and worked with real-world datasets.",
-          image: "https://via.placeholder.com/300",
-          tech: ["Python", "NLP", "AI"]
-        },
-
-        {
-          id: 2,
-          title: "Movie App",
-          description: "Movie browsing app using TMDB API",
-          fullDescription:
-            "Developed a mobile application using Kotlin and Android Studio that integrates TheMovieDB API. Features include viewing popular, top-rated, and upcoming movies, detailed movie pages, and user-friendly UI built with modern Android architecture.",
-          image: "https://via.placeholder.com/300",
-          tech: ["Kotlin", "Android", "API"]
-        }
-      ];
-  });
+  const [projects, setProjects] = useState([]);
 
   // PHOTOS STATE
-  const [photos, setPhotos] = useState(() => {
-    const savedPhotos = localStorage.getItem("photos");
-
-    return savedPhotos
-      ? JSON.parse(savedPhotos)
-      : [];
-  });
-
-  // SAVE PROJECTS
-  useEffect(() => {
-    localStorage.setItem("projects", JSON.stringify(projects));
-  }, [projects]);
-
-  // SAVE PHOTOS
-  useEffect(() => {
-    localStorage.setItem("photos", JSON.stringify(photos));
-  }, [photos]);
+  const [photos, setPhotos] = useState([]);
 
   useEffect(() => {
 
