@@ -1,40 +1,45 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useAuth }
+from "react-oidc-context";
 
-export default function Login({ setIsAdmin }) {
-    const [input, setInput] = useState("");
-    const navigate = useNavigate();
+export default function Login() {
 
-    const handleLogin = () => {
-        if (input === import.meta.env.VITE_ADMIN_PASSWORD) {
-            localStorage.setItem("isAdmin", "true");
-            setIsAdmin(true); // 🔥 THIS FIXES IT
-            navigate("/admin");
-        } else {
-            alert("Wrong password");
-        }
-    };
+  const auth = useAuth();
 
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-black text-white">
-            <div className="bg-gray-900 p-6 rounded-xl w-80">
-                <h2 className="text-xl mb-4">Admin Login</h2>
+  return (
 
-                <input
-                    type="password"
-                    placeholder="Enter password"
-                    className="w-full p-2 mb-4 bg-gray-800 rounded"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                />
+    <div className="
+      min-h-screen
+      bg-black
+      text-white
+      flex
+      flex-col
+      items-center
+      justify-center
+      gap-6
+    ">
 
-                <button
-                    onClick={handleLogin}
-                    className="w-full bg-white text-black py-2 rounded"
-                >
-                    Login
-                </button>
-            </div>
-        </div>
-    );
+      <h1 className="text-4xl font-bold">
+        Admin Portal
+      </h1>
+
+      <p className="text-gray-400">
+        Authorized access only
+      </p>
+
+      <button
+        onClick={() => auth.signinRedirect()}
+        className="
+          bg-white
+          text-black
+          px-6
+          py-3
+          rounded-xl
+          font-semibold
+        "
+      >
+        Login with Cognito
+      </button>
+
+    </div>
+  );
 }

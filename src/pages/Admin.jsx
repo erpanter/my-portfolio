@@ -1,16 +1,15 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { uploadToS3 } from "../utils/s3Upload";
+import { useAuth } from "react-oidc-context";
 
 export default function Admin({
   projects,
   setProjects,
   photos,
-  setPhotos,
-  setIsAdmin
+  setPhotos
 }) {
 
-  const navigate = useNavigate();
+  const auth = useAuth();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -76,7 +75,8 @@ export default function Admin({
           }
         );
 
-        const data = await response.json();
+        const data =
+          await response.json().catch(() => ({}));
 
         console.log("UPDATE RESPONSE:", data);
 
@@ -118,7 +118,8 @@ export default function Admin({
           }
         );
 
-        const data = await response.json();
+        const data =
+          await response.json().catch(() => ({}));
 
         console.log("PROJECT RESPONSE:", data);
 
@@ -213,7 +214,8 @@ export default function Admin({
         }
       );
 
-      const data = await response.json();
+      const data =
+        await response.json().catch(() => ({}));
 
       console.log("PHOTO RESPONSE:", data);
 
@@ -242,29 +244,39 @@ export default function Admin({
   // =========================
   const handleDeletePhoto = async (id) => {
 
-  await fetch(
-    `${import.meta.env.VITE_API_URL}/photo/${id}`,
-    {
-      method: "DELETE"
-    }
-  );
+    await fetch(
+      `${import.meta.env.VITE_API_URL}/photo/${id}`,
+      {
+        method: "DELETE"
+      }
+    );
 
-  setPhotos((prev) =>
-    prev.filter((photo) => photo.id !== id)
-  );
-};
+    setPhotos((prev) =>
+      prev.filter((photo) => photo.id !== id)
+    );
+  };
 
   // =========================
   // LOGOUT
   // =========================
   const handleLogout = () => {
 
-    localStorage.removeItem("isAdmin");
+  auth.removeUser();
 
-    setIsAdmin(false);
+  const logoutUri =
+    import.meta.env.VITE_COGNITO_LOGOUT_URI;
 
-    navigate("/");
-  };
+  const cognitoDomain =
+    import.meta.env.VITE_COGNITO_DOMAIN;
+
+  const clientId =
+    import.meta.env.VITE_COGNITO_CLIENT_ID;
+
+  window.location.href =
+    `${cognitoDomain}/logout?` +
+    `client_id=${clientId}` +
+    `&logout_uri=${encodeURIComponent(logoutUri)}`;
+};
 
   return (
     <div className="min-h-screen bg-black text-white p-10">

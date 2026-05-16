@@ -1,11 +1,36 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.jsx";
-import "./index.css";
-import { BrowserRouter } from "react-router-dom";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
+import {
+  BrowserRouter
+} from "react-router-dom";
+
+import {
+  AuthProvider
+} from "react-oidc-context";
+
+import App from "./App";
+
+import "./index.css";
+
+import { cognitoAuthConfig }
+from "./authConfig";
+
+ReactDOM.createRoot(
+  document.getElementById("root")
+).render(
+
+  <React.StrictMode>
+
+    <BrowserRouter>
+
+      <AuthProvider {...cognitoAuthConfig}>
+
+        <App />
+
+      </AuthProvider>
+
+    </BrowserRouter>
+
+  </React.StrictMode>
 );
