@@ -178,6 +178,41 @@ export default function Home({ projects, photos }) {
         </div>
       </section>
 
+      {/* FOOTER */}
+      <footer className="
+  border-t
+  border-gray-800
+  py-8
+  flex
+  flex-col
+  items-center
+  justify-center
+  gap-4
+">
+        <a
+          href="https://aws.amazon.com/what-is-cloud-computing"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="https://d0.awsstatic.com/logos/powered-by-aws-white.png"
+            alt="Powered by AWS Cloud Computing"
+            className="
+        h-10
+        object-contain
+        opacity-80
+        hover:opacity-100
+        transition
+      "
+          />
+        </a>
+
+        <p className="text-xs text-gray-600">
+          Built with AWS Cloud Services
+        </p>
+
+      </footer>
+
     </div>
   );
 }
