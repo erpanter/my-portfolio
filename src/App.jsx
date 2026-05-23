@@ -2,11 +2,12 @@ import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import { useAuth }
-from "react-oidc-context";
+  from "react-oidc-context";
 
 import Home from "./pages/Home";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
+import NotFound from "./pages/NotFound";
 
 const API_URL =
   import.meta.env.VITE_API_URL;
@@ -147,6 +148,11 @@ function App() {
             <Login />
           )
         }
+      />
+
+      <Route
+        path="*"
+        element={<NotFound />}
       />
 
     </Routes>
