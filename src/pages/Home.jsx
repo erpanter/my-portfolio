@@ -47,9 +47,9 @@ export default function Home({ projects, photos }) {
           </h1>
 
           <p className="text-gray-400 max-w-md">
-            IT student at Nanyang Polytechnic with experience in cloud systems, automation, and AI-driven applications.
-            I have recently completed an internship at NCS, working with real-world systems and enterprise workflows.
-            I'm passionate in continuously learning new technologies.
+            Information Technology graduate from Nanyang Polytechnic with experience in cloud systems, automation, and AI-driven applications.
+            Recently completed an internship at NCS, working with real-world enterprise systems and workflows while gaining hands-on industry experience.
+            Passionate about continuously learning new technologies and building practical full-stack solutions using cloud and serverless architectures.
             Outside of tech, I enjoy photography as a creative outlet.
           </p>
         </div>
