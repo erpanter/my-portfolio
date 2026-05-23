@@ -28,7 +28,17 @@ export default function Home({ projects, photos }) {
         <img
           src={profile}
           alt="profile"
-          className="w-40 h-40 rounded-full object-cover border-4 border-white"
+          className="
+          w-40
+          h-40
+          rounded-full
+          object-cover
+          border-4
+        border-white
+          shadow-xl
+          ring-1
+        ring-white/20
+          "
         />
 
         <div>
