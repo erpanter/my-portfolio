@@ -69,7 +69,9 @@ export default function Admin({
           {
             method: "PUT",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              Authorization:
+                `Bearer ${auth.user?.access_token}`
             },
             body: JSON.stringify(updatedProject)
           }
@@ -112,7 +114,9 @@ export default function Admin({
           {
             method: "POST",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              Authorization:
+                `Bearer ${auth.user?.access_token}`
             },
             body: JSON.stringify(newProject)
           }
@@ -162,7 +166,11 @@ export default function Admin({
     await fetch(
       `${import.meta.env.VITE_API_URL}/project/${id}`,
       {
-        method: "DELETE"
+        method: "DELETE",
+        headers: {
+          Authorization:
+            `Bearer ${auth.user?.access_token}`
+        }
       }
     );
 
@@ -208,7 +216,9 @@ export default function Admin({
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization:
+              `Bearer ${auth.user?.access_token}`
           },
           body: JSON.stringify(photoItem)
         }
@@ -247,7 +257,11 @@ export default function Admin({
     await fetch(
       `${import.meta.env.VITE_API_URL}/photo/${id}`,
       {
-        method: "DELETE"
+        method: "DELETE",
+        headers: {
+          Authorization:
+            `Bearer ${auth.user?.access_token}`
+        }
       }
     );
 
@@ -261,22 +275,22 @@ export default function Admin({
   // =========================
   const handleLogout = () => {
 
-  auth.removeUser();
+    auth.removeUser();
 
-  const logoutUri =
-    import.meta.env.VITE_COGNITO_LOGOUT_URI;
+    const logoutUri =
+      import.meta.env.VITE_COGNITO_LOGOUT_URI;
 
-  const cognitoDomain =
-    import.meta.env.VITE_COGNITO_DOMAIN;
+    const cognitoDomain =
+      import.meta.env.VITE_COGNITO_DOMAIN;
 
-  const clientId =
-    import.meta.env.VITE_COGNITO_CLIENT_ID;
+    const clientId =
+      import.meta.env.VITE_COGNITO_CLIENT_ID;
 
-  window.location.href =
-    `${cognitoDomain}/logout?` +
-    `client_id=${clientId}` +
-    `&logout_uri=${encodeURIComponent(logoutUri)}`;
-};
+    window.location.href =
+      `${cognitoDomain}/logout?` +
+      `client_id=${clientId}` +
+      `&logout_uri=${encodeURIComponent(logoutUri)}`;
+  };
 
   return (
     <div className="min-h-screen bg-black text-white p-10">
