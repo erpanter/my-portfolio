@@ -4,6 +4,7 @@ import profile from "../assets/profile.jpeg";
 
 export default function Home({ projects, photos }) {
   const [expandedId, setExpandedId] = useState(null);
+  const resumeUrl = "https://nicholas-portfolio-assets.s3.ap-southeast-1.amazonaws.com/Nicholas_Ho_Resume.pdf";
 
   return (
     <div className="bg-black text-white scroll-smooth relative">
@@ -21,6 +22,14 @@ export default function Home({ projects, photos }) {
         <a href="#about" className="hover:text-gray-400">About</a>
         <a href="#projects" className="hover:text-gray-400">Projects</a>
         <a href="#photos" className="hover:text-gray-400">Photography</a>
+        <a
+          href={resumeUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-gray-400"
+        >
+          Resume
+        </a>
       </nav>
 
       {/* HERO */}
@@ -51,6 +60,41 @@ export default function Home({ projects, photos }) {
             I have recently completed an internship at NCS, working with enterprise systems and real-world workflows.
             I'm passionate about learning new technologies and building practical cloud-based solutions. Outside of tech, I enjoy photography as a creative outlet.
           </p>
+
+          <div className="flex gap-4 mt-6">
+            <a
+              href={resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="
+              bg-white
+              text-black
+                px-5
+                py-3
+                rounded-xl
+                font-semibold
+                hover:opacity-90
+                transition
+              "
+            >
+              View Resume
+            </a>
+
+            <a
+              href="#projects"
+              className="
+                border
+              border-white/20
+                px-5
+                py-3
+                rounded-xl
+              hover:bg-white/10
+                transition
+              "
+            >
+              View Projects
+            </a>
+          </div>
         </div>
       </section>
 
