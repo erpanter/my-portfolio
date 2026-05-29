@@ -110,7 +110,7 @@ export default function Home({ projects, photos }) {
       </section>
 
       {/* PROJECTS */}
-      <section id="projects" className="px-10 py-16 border-t border-gray-800 relative z-50">
+      <section id="projects" className="px-4 md:px-10 py-16 border-t border-gray-800 relative z-50">
         <h2 className="text-3xl font-bold mb-6">Projects</h2>
 
         <div className="grid md:grid-cols-3 gap-6">
@@ -124,9 +124,16 @@ export default function Home({ projects, photos }) {
                 className={`
                   relative bg-gray-900 rounded-xl p-4 cursor-pointer
                   transition-all duration-500 ease-in-out
-                  hover:scale-[1.03] hover:shadow-xl
-                  
-                  ${isOpen ? "md:col-span-3 scale-[1.02] shadow-2xl z-50 ring-1 ring-white/20" : ""}
+                  hover:shadow-xl
+                  overflow-hidden
+                  break-words
+                  w-full
+                  min-w-0
+
+                  ${isOpen
+                    ? "md:col-span-3 shadow-2xl z-50 ring-1 ring-white/20"
+                    : ""
+                  }
                 `}
               >
                 {/* CLOSE BUTTON */}
@@ -146,7 +153,10 @@ export default function Home({ projects, photos }) {
                   src={proj.image}
                   className={`
                     rounded mb-3 w-full transition-all duration-500 ease-in-out
-                    ${isOpen ? "h-auto object-contain" : "h-48 object-cover"}
+                    ${isOpen
+                      ? "max-h-[70vh] object-contain"
+                      : "h-48 object-cover"
+                    }
                   `}
                 />
 
@@ -157,7 +167,12 @@ export default function Home({ projects, photos }) {
                 <div
                   className={`
                     overflow-hidden transition-all duration-500 ease-in-out
-                    ${isOpen ? "max-h-[500px] opacity-100 mt-4" : "max-h-0 opacity-0"}
+                    break-words
+
+                    ${isOpen
+                      ? "max-h-[1000px] opacity-100 mt-4"
+                      : "max-h-0 opacity-0"
+                    }
                   `}
                 >
                   <div className="text-gray-300 space-y-2">
