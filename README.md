@@ -2,9 +2,9 @@
 
 A modern full-stack portfolio platform built with React and AWS cloud services, featuring a secure admin dashboard, serverless backend architecture, and cloud-based media management.
 
-## Live Demo
+## Portfolio Link
 
-https://main.d3dtch9735w75n.amplifyapp.com/
+https://www.nicholashoportfolio.com
 
 ---
 
