@@ -25,6 +25,7 @@ export default function Admin({
   // =========================
   // ADD / UPDATE PROJECT
   // =========================
+  console.log(updatedProject);
   const handleSaveProject = async () => {
 
     try {
