@@ -19,7 +19,6 @@ export default function Admin({
   const [photoImage, setPhotoImage] = useState(null);
 
   const [editingId, setEditingId] = useState(null);
-  const [currentImage, setCurrentImage] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -59,7 +58,10 @@ export default function Admin({
           title,
           description,
           fullDescription,
-          image: imageUrl || currentImage
+          image:
+            imageUrl ||
+            projects.find((p) => p.id === editingId)?.image ||
+            ""
         };
 
         const response = await fetch(
@@ -143,7 +145,6 @@ export default function Admin({
       setProjectImage(null);
 
       setEditingId(null);
-      setCurrentImage("");
 
       console.log("Project saved!");
 
@@ -162,6 +163,12 @@ export default function Admin({
   // =========================
   const handleDeleteProject = async (id) => {
 
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this project?"
+    );
+
+    if (!confirmed) return;
+
     await fetch(
       `${import.meta.env.VITE_API_URL}/project/${id}`,
       {
@@ -179,11 +186,10 @@ export default function Admin({
   };
 
   const handleEditProject = (proj) => {
+
     setTitle(proj.title);
     setDescription(proj.description);
     setFullDescription(proj.fullDescription);
-
-    setCurrentImage(proj.image);
 
     setEditingId(proj.id);
   };
@@ -253,6 +259,12 @@ export default function Admin({
   // DELETE PHOTO
   // =========================
   const handleDeletePhoto = async (id) => {
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this photo?"
+    );
+
+    if (!confirmed) return;
 
     await fetch(
       `${import.meta.env.VITE_API_URL}/photo/${id}`,
