@@ -1,143 +1,59 @@
-import { Routes, Route } from "react-router-dom";
-import { useState, useEffect } from "react";
-
-import { useAuth }
-  from "react-oidc-context";
+import { useEffect, useState } from "react";
+import { useAuth } from "react-oidc-context";
+import { Route, Routes } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
-const API_URL =
-  import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
-
-  // =========================
-  // COGNITO AUTH
-  // =========================
   const auth = useAuth();
+  const [projects, setProjects] = useState([]);
+  const [photos, setPhotos] = useState([]);
 
-  const isAdmin =
-    auth.isAuthenticated;
-
-  // =========================
-  // STATE
-  // =========================
-  const [projects, setProjects] =
-    useState([]);
-
-  const [photos, setPhotos] =
-    useState([]);
-
-  // =========================
-  // FETCH CONTENT
-  // =========================
   useEffect(() => {
-
     const fetchContent = async () => {
-
       try {
+        const response = await fetch(`${API_URL}/content`);
+        if (!response.ok) throw new Error("Failed to load portfolio content");
 
-        const res = await fetch(
-          `${API_URL}/content`
-        );
-
-        const data = await res.json();
-
-        // PROJECTS
-        const loadedProjects =
-          data.filter(
-            (item) =>
-              item.type === "project"
-          );
-
-        // PHOTOS
-        const loadedPhotos =
-          data.filter(
-            (item) =>
-              item.type === "photo"
-          );
-
-        setProjects(loadedProjects);
-
-        setPhotos(loadedPhotos);
-
-      } catch (err) {
-
-        console.error(
-          "FETCH ERROR:",
-          err
-        );
+        const content = await response.json();
+        setProjects(content.filter((item) => item.type === "project"));
+        setPhotos(content.filter((item) => item.type === "photo"));
+      } catch (error) {
+        console.error("Failed to fetch portfolio content:", error);
       }
     };
 
     fetchContent();
-
   }, []);
 
-  // =========================
-  // LOADING
-  // =========================
   if (auth.isLoading) {
-
     return (
-      <div className="
-        min-h-screen
-        bg-black
-        text-white
-        flex
-        items-center
-        justify-center
-      ">
+      <div className="flex min-h-screen items-center justify-center bg-black text-white">
         Loading...
       </div>
     );
   }
 
-  // =========================
-  // ERROR
-  // =========================
   if (auth.error) {
-
     return (
-      <div className="
-        min-h-screen
-        bg-black
-        text-red-500
-        flex
-        items-center
-        justify-center
-      ">
-        Auth Error:
-        {" "}
-        {auth.error.message}
+      <div className="flex min-h-screen items-center justify-center bg-black text-red-500">
+        Auth error: {auth.error.message}
       </div>
     );
   }
 
-  // =========================
-  // ROUTES
-  // =========================
   return (
-
     <Routes>
-
-      <Route
-        path="/"
-        element={
-          <Home
-            projects={projects}
-            photos={photos}
-          />
-        }
-      />
-
+      <Route path="/" element={<Home projects={projects} photos={photos} />} />
       <Route
         path="/portal"
         element={
-          isAdmin ? (
+          auth.isAuthenticated ? (
             <Admin
               projects={projects}
               setProjects={setProjects}
@@ -149,12 +65,7 @@ function App() {
           )
         }
       />
-
-      <Route
-        path="*"
-        element={<NotFound />}
-      />
-
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

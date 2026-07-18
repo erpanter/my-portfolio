@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { uploadToS3 } from "../utils/s3Upload";
 import { useAuth } from "react-oidc-context";
+import { uploadToS3 } from "../utils/s3Upload";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Admin({
   projects,
@@ -65,7 +67,7 @@ export default function Admin({
         };
 
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/project`,
+          `${API_URL}/project`,
           {
             method: "PUT",
             headers: {
@@ -110,7 +112,7 @@ export default function Admin({
         };
 
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/project`,
+          `${API_URL}/project`,
           {
             method: "POST",
             headers: {
@@ -169,8 +171,8 @@ export default function Admin({
 
     if (!confirmed) return;
 
-    await fetch(
-      `${import.meta.env.VITE_API_URL}/project/${id}`,
+    const response = await fetch(
+      `${API_URL}/project/${id}`,
       {
         method: "DELETE",
         headers: {
@@ -179,6 +181,11 @@ export default function Admin({
         }
       }
     );
+
+    if (!response.ok) {
+      console.error("Failed to delete project");
+      return;
+    }
 
     setProjects((prev) =>
       prev.filter((proj) => proj.id !== id)
@@ -218,7 +225,7 @@ export default function Admin({
       };
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/photo`,
+        `${API_URL}/photo`,
         {
           method: "POST",
           headers: {
@@ -266,8 +273,8 @@ export default function Admin({
 
     if (!confirmed) return;
 
-    await fetch(
-      `${import.meta.env.VITE_API_URL}/photo/${id}`,
+    const response = await fetch(
+      `${API_URL}/photo/${id}`,
       {
         method: "DELETE",
         headers: {
@@ -276,6 +283,11 @@ export default function Admin({
         }
       }
     );
+
+    if (!response.ok) {
+      console.error("Failed to delete photo");
+      return;
+    }
 
     setPhotos((prev) =>
       prev.filter((photo) => photo.id !== id)
@@ -362,6 +374,7 @@ export default function Admin({
           {projectImage && (
             <img
               src={URL.createObjectURL(projectImage)}
+              alt="Selected project preview"
               className="w-48 rounded"
             />
           )}
@@ -401,6 +414,7 @@ export default function Admin({
 
               <img
                 src={proj.image}
+                alt={proj.title}
                 className="h-32 w-full object-cover rounded mb-2"
               />
 
@@ -452,6 +466,7 @@ export default function Admin({
           {photoImage && (
             <img
               src={URL.createObjectURL(photoImage)}
+              alt="Selected photography preview"
               className="w-48 rounded"
             />
           )}
@@ -478,15 +493,16 @@ export default function Admin({
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
-          {photos.map((photo, index) => (
+          {photos.map((photo) => (
 
             <div
-              key={index}
+              key={photo.id}
               className="relative"
             >
 
               <img
                 src={photo.url}
+                alt="Portfolio photography"
                 className="rounded w-full"
               />
 

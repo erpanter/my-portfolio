@@ -1,11 +1,11 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
 import profile from "../assets/profile.jpeg";
 
+const RESUME_URL =
+  "https://nicholas-portfolio-assets.s3.ap-southeast-1.amazonaws.com/Nicholas_Ho_Resume.pdf";
+
 export default function Home({ projects, photos }) {
   const [expandedId, setExpandedId] = useState(null);
-  const resumeUrl = "https://nicholas-portfolio-assets.s3.ap-southeast-1.amazonaws.com/Nicholas_Ho_Resume.pdf";
-
   return (
     <div className="bg-black text-white scroll-smooth relative">
 
@@ -14,7 +14,8 @@ export default function Home({ projects, photos }) {
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300"
           onClick={() => setExpandedId(null)}
-        ></div>
+          aria-hidden="true"
+        />
       )}
 
       {/* NAVBAR */}
@@ -23,7 +24,7 @@ export default function Home({ projects, photos }) {
         <a href="#projects" className="hover:text-gray-400">Projects</a>
         <a href="#photos" className="hover:text-gray-400">Photography</a>
         <a
-          href={resumeUrl}
+          href={RESUME_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="hover:text-gray-400"
@@ -36,7 +37,7 @@ export default function Home({ projects, photos }) {
       <section className="min-h-screen flex flex-col md:flex-row items-center justify-center gap-10 px-6 pt-20">
         <img
           src={profile}
-          alt="profile"
+          alt="Nicholas Ho"
           className="
           w-40
           h-40
@@ -63,7 +64,7 @@ export default function Home({ projects, photos }) {
 
           <div className="flex gap-4 mt-6">
             <a
-              href={resumeUrl}
+              href={RESUME_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="
@@ -183,6 +184,8 @@ export default function Home({ projects, photos }) {
                 {/* CLOSE BUTTON */}
                 {isOpen && (
                   <button
+                    type="button"
+                    aria-label={`Close ${proj.title} details`}
                     onClick={(e) => {
                       e.stopPropagation();
                       setExpandedId(null);
@@ -195,6 +198,7 @@ export default function Home({ projects, photos }) {
 
                 <img
                   src={proj.image}
+                  alt={proj.title}
                   className={`
                     rounded mb-3 w-full transition-all duration-500 ease-in-out
                     ${isOpen
@@ -234,11 +238,11 @@ export default function Home({ projects, photos }) {
         <h2 className="text-3xl font-bold mb-6">Photography 📸</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {photos.map((photo, index) => (
-            <div key={index} className="overflow-hidden rounded-xl">
+          {photos.map((photo) => (
+            <div key={photo.id} className="overflow-hidden rounded-xl">
               <img
                 src={photo.url}
-                alt="photo"
+                alt="Portfolio photography"
                 className="w-full h-auto rounded-xl transition-transform duration-300 ease-out hover:scale-105"
               />
             </div>
@@ -247,16 +251,7 @@ export default function Home({ projects, photos }) {
       </section>
 
       {/* FOOTER */}
-      <footer className="
-  border-t
-  border-gray-800
-  py-8
-  flex
-  flex-col
-  items-center
-  justify-center
-  gap-4
-">
+      <footer className="flex flex-col items-center justify-center gap-4 border-t border-gray-800 py-8">
         <a
           href="https://aws.amazon.com/what-is-cloud-computing"
           target="_blank"
@@ -265,22 +260,12 @@ export default function Home({ projects, photos }) {
           <img
             src="https://d0.awsstatic.com/logos/powered-by-aws-white.png"
             alt="Powered by AWS Cloud Computing"
-            className="
-        h-10
-        object-contain
-        opacity-80
-        hover:opacity-100
-        transition
-      "
+            className="h-10 object-contain opacity-80 transition hover:opacity-100"
           />
         </a>
 
-        <p className="text-xs text-gray-600">
-          Built with AWS Cloud Services
-        </p>
-
+        <p className="text-xs text-gray-600">Built with AWS Cloud Services</p>
       </footer>
-
     </div>
   );
 }
