@@ -1,5 +1,6 @@
 import { useState } from "react";
 import profile from "../assets/profile.jpeg";
+import { getProjectImages } from "../utils/projectImages";
 
 const RESUME_URL =
   "https://nicholas-portfolio-assets.s3.ap-southeast-1.amazonaws.com/Nicholas_Ho_Resume.pdf";
@@ -161,6 +162,7 @@ export default function Home({ projects, photos }) {
         <div className="grid md:grid-cols-3 gap-6">
           {projects.map((proj) => {
             const isOpen = expandedId === proj.id;
+            const projectImages = getProjectImages(proj);
 
             return (
               <div
@@ -190,23 +192,52 @@ export default function Home({ projects, photos }) {
                       e.stopPropagation();
                       setExpandedId(null);
                     }}
-                    className="absolute top-3 right-3 text-white text-sm opacity-70 hover:opacity-100"
+                    className="
+                      absolute right-3 top-3 z-10
+                      flex h-8 w-8 items-center justify-center
+                      rounded-xl border border-white/40
+                      bg-black/80 text-lg font-bold leading-none text-white
+                      shadow-lg backdrop-blur-sm
+                      transition hover:scale-110 hover:border-white hover:bg-white hover:text-black
+                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white
+                    "
                   >
-                    ✕
+                    <span aria-hidden="true">×</span>
                   </button>
                 )}
 
-                <img
-                  src={proj.image}
-                  alt={proj.title}
-                  className={`
-                    rounded mb-3 w-full transition-all duration-500 ease-in-out
-                    ${isOpen
-                      ? "max-h-[70vh] object-contain"
-                      : "h-48 object-cover"
+                {projectImages.length > 0 && (
+                  <div
+                    className={isOpen ? "project-gallery mb-4" : "mb-3"}
+                    style={
+                      isOpen
+                        ? {
+                            "--project-image-count": Math.min(
+                              projectImages.length,
+                              3
+                            )
+                          }
+                        : undefined
                     }
-                  `}
-                />
+                  >
+                    {(isOpen ? projectImages : projectImages.slice(0, 1)).map(
+                      (imageUrl, index) => (
+                        <img
+                          key={`${imageUrl}-${index}`}
+                          src={imageUrl}
+                          alt={`${proj.title} screenshot ${index + 1}`}
+                          loading="lazy"
+                          decoding="async"
+                          className={
+                            isOpen
+                              ? "project-gallery-image"
+                              : "h-48 w-full rounded object-cover"
+                          }
+                        />
+                      )
+                    )}
+                  </div>
+                )}
 
                 <h3 className="font-semibold text-lg">{proj.title}</h3>
                 <p className="text-gray-400 text-sm">{proj.description}</p>

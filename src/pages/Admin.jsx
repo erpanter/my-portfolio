@@ -1,8 +1,42 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "react-oidc-context";
+import { getProjectImages } from "../utils/projectImages";
 import { uploadToS3 } from "../utils/s3Upload";
 
 const API_URL = import.meta.env.VITE_API_URL;
+
+function SelectedImagePreview({ file, index, onRemove }) {
+  const imageRef = useRef(null);
+
+  useEffect(() => {
+    const previewUrl = URL.createObjectURL(file);
+    const image = imageRef.current;
+
+    if (image) {
+      image.src = previewUrl;
+    }
+
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [file]);
+
+  return (
+    <div className="relative">
+      <img
+        ref={imageRef}
+        alt={`Selected project image ${index + 1}`}
+        className="h-28 w-full rounded object-cover"
+      />
+      <button
+        type="button"
+        onClick={() => onRemove(file)}
+        aria-label={`Remove selected image ${index + 1}`}
+        className="absolute right-1 top-1 rounded bg-red-500 px-2 py-1 text-xs text-white"
+      >
+        ✕
+      </button>
+    </div>
+  );
+}
 
 export default function Admin({
   projects,
@@ -17,7 +51,8 @@ export default function Admin({
   const [description, setDescription] = useState("");
   const [fullDescription, setFullDescription] = useState("");
 
-  const [projectImage, setProjectImage] = useState(null);
+  const [projectImages, setProjectImages] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
   const [photoImage, setPhotoImage] = useState(null);
 
   const [editingId, setEditingId] = useState(null);
@@ -37,17 +72,10 @@ export default function Admin({
 
       setLoading(true);
 
-      let imageUrl = null;
-
-      // Upload image if exists
-      if (projectImage) {
-
-        console.log("Uploading project image...");
-
-        imageUrl = await uploadToS3(projectImage);
-
-        console.log("Uploaded:", imageUrl);
-      }
+      const uploadedImages = await Promise.all(
+        projectImages.map((file) => uploadToS3(file))
+      );
+      const images = [...existingImages, ...uploadedImages];
 
       // =========================
       // EDIT EXISTING PROJECT
@@ -60,10 +88,8 @@ export default function Admin({
           title,
           description,
           fullDescription,
-          image:
-            imageUrl ||
-            projects.find((p) => p.id === editingId)?.image ||
-            ""
+          images,
+          image: images[0] || ""
         };
 
         const response = await fetch(
@@ -108,7 +134,8 @@ export default function Admin({
           title,
           description,
           fullDescription,
-          image: imageUrl || ""
+          images,
+          image: images[0] || ""
         };
 
         const response = await fetch(
@@ -144,7 +171,8 @@ export default function Admin({
       setDescription("");
       setFullDescription("");
 
-      setProjectImage(null);
+      setProjectImages([]);
+      setExistingImages([]);
 
       setEditingId(null);
 
@@ -197,8 +225,40 @@ export default function Admin({
     setTitle(proj.title);
     setDescription(proj.description);
     setFullDescription(proj.fullDescription);
-
+    setExistingImages(getProjectImages(proj));
+    setProjectImages([]);
     setEditingId(proj.id);
+  };
+
+  const removeExistingImage = (imageUrl) => {
+    setExistingImages((images) => images.filter((url) => url !== imageUrl));
+  };
+
+  const removeSelectedImage = (fileToRemove) => {
+    setProjectImages((images) =>
+      images.filter((file) => file !== fileToRemove)
+    );
+  };
+
+  const handleProjectImagesSelected = (event) => {
+    const selectedFiles = Array.from(event.target.files);
+
+    setProjectImages((currentFiles) => {
+      const fileKeys = new Set(
+        currentFiles.map(
+          (file) => `${file.name}-${file.size}-${file.lastModified}`
+        )
+      );
+      const newFiles = selectedFiles.filter(
+        (file) =>
+          !fileKeys.has(`${file.name}-${file.size}-${file.lastModified}`)
+      );
+
+      return [...currentFiles, ...newFiles];
+    });
+
+    // Let the same file be selected again after it has been removed.
+    event.target.value = "";
   };
 
   // =========================
@@ -363,20 +423,49 @@ export default function Admin({
             onChange={(e) => setFullDescription(e.target.value)}
           />
 
+          <label className="text-sm font-medium" htmlFor="project-images">
+            Project images
+          </label>
           <input
+            id="project-images"
             type="file"
             accept="image/*"
-            onChange={(e) =>
-              setProjectImage(e.target.files[0])
-            }
+            multiple
+            onChange={handleProjectImagesSelected}
           />
+          <p className="text-sm text-gray-400">
+            Select multiple images at once, or select more images before saving.
+          </p>
 
-          {projectImage && (
-            <img
-              src={URL.createObjectURL(projectImage)}
-              alt="Selected project preview"
-              className="w-48 rounded"
-            />
+          {(existingImages.length > 0 || projectImages.length > 0) && (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {existingImages.map((imageUrl, index) => (
+                <div key={imageUrl} className="relative">
+                  <img
+                    src={imageUrl}
+                    alt={`Existing project image ${index + 1}`}
+                    className="h-28 w-full rounded object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeExistingImage(imageUrl)}
+                    aria-label={`Remove existing image ${index + 1}`}
+                    className="absolute right-1 top-1 rounded bg-red-500 px-2 py-1 text-xs"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+
+              {projectImages.map((file, index) => (
+                <SelectedImagePreview
+                  key={`${file.name}-${file.size}-${file.lastModified}`}
+                  file={file}
+                  index={index}
+                  onRemove={removeSelectedImage}
+                />
+              ))}
+            </div>
           )}
 
           <button
@@ -412,11 +501,13 @@ export default function Admin({
               className="bg-gray-900 p-4 rounded-xl"
             >
 
-              <img
-                src={proj.image}
-                alt={proj.title}
-                className="h-32 w-full object-cover rounded mb-2"
-              />
+              {getProjectImages(proj)[0] && (
+                <img
+                  src={getProjectImages(proj)[0]}
+                  alt={proj.title}
+                  className="mb-2 h-32 w-full rounded object-cover"
+                />
+              )}
 
               <h3 className="font-semibold">
                 {proj.title}
