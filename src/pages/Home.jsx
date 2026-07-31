@@ -208,20 +208,19 @@ export default function Home({ projects, photos }) {
 
                 {projectImages.length > 0 && (
                   <div
-                    className={isOpen ? "project-gallery mb-4" : "mb-3"}
-                    style={
+                    className={
                       isOpen
-                        ? {
-                            "--project-image-count": Math.min(
-                              projectImages.length,
-                              3
-                            )
-                          }
-                        : undefined
+                        ? "project-gallery mb-4"
+                        : "project-preview-gallery mb-3"
                     }
+                    style={{
+                      "--project-image-count": Math.min(
+                        projectImages.length,
+                        3
+                      )
+                    }}
                   >
-                    {(isOpen ? projectImages : projectImages.slice(0, 1)).map(
-                      (imageUrl, index) => (
+                    {projectImages.map((imageUrl, index) => (
                         <img
                           key={`${imageUrl}-${index}`}
                           src={imageUrl}
@@ -234,8 +233,7 @@ export default function Home({ projects, photos }) {
                               : "h-auto w-full rounded"
                           }
                         />
-                      )
-                    )}
+                      ))}
                   </div>
                 )}
 
