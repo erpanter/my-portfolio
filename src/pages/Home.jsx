@@ -159,7 +159,7 @@ export default function Home({ projects, photos }) {
       <section id="projects" className="px-4 md:px-10 py-16 border-t border-gray-800 relative z-50">
         <h2 className="text-3xl font-bold mb-6">Projects</h2>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid items-start gap-6 md:grid-cols-3">
           {projects.map((proj) => {
             const isOpen = expandedId === proj.id;
             const projectImages = getProjectImages(proj);
@@ -231,7 +231,7 @@ export default function Home({ projects, photos }) {
                           className={
                             isOpen
                               ? "project-gallery-image"
-                              : "h-48 w-full rounded object-cover"
+                              : "h-auto w-full rounded"
                           }
                         />
                       )
@@ -240,7 +240,9 @@ export default function Home({ projects, photos }) {
                 )}
 
                 <h3 className="font-semibold text-lg">{proj.title}</h3>
-                <p className="text-gray-400 text-sm">{proj.description}</p>
+                <p className="whitespace-pre-wrap text-sm text-gray-400">
+                  {proj.description}
+                </p>
 
                 {/* EXPANDABLE CONTENT */}
                 <div
@@ -255,7 +257,9 @@ export default function Home({ projects, photos }) {
                   `}
                 >
                   <div className="text-gray-300 space-y-2">
-                    <p>{proj.fullDescription}</p>
+                    <p className="whitespace-pre-wrap">
+                      {proj.fullDescription}
+                    </p>
                   </div>
                 </div>
               </div>
