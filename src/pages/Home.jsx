@@ -193,16 +193,27 @@ export default function Home({ projects, photos }) {
                       setExpandedId(null);
                     }}
                     className="
-                      absolute right-3 top-3 z-10
-                      flex h-8 w-8 items-center justify-center
-                      rounded-xl border border-white/40
-                      bg-black/80 text-lg font-bold leading-none text-white
-                      shadow-lg backdrop-blur-sm
-                      transition hover:scale-110 hover:border-white hover:bg-white hover:text-black
-                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white
+                      absolute right-4 top-4 z-10
+                      inline-flex h-7 w-7 items-center justify-center
+                      rounded-lg border border-white/15
+                      bg-gray-900/75 text-gray-400 backdrop-blur-sm
+                      transition-colors hover:border-white/30 hover:bg-gray-800 hover:text-white
+                      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60
                     "
                   >
-                    <span aria-hidden="true">×</span>
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      className="h-3.5 w-3.5"
+                    >
+                      <path
+                        d="M5 5l10 10M15 5L5 15"
+                        stroke="currentColor"
+                        strokeWidth="1.75"
+                        strokeLinecap="round"
+                      />
+                    </svg>
                   </button>
                 )}
 
@@ -221,19 +232,19 @@ export default function Home({ projects, photos }) {
                     }}
                   >
                     {projectImages.map((imageUrl, index) => (
-                        <img
-                          key={`${imageUrl}-${index}`}
-                          src={imageUrl}
-                          alt={`${proj.title} screenshot ${index + 1}`}
-                          loading="lazy"
-                          decoding="async"
-                          className={
-                            isOpen
-                              ? "project-gallery-image"
-                              : "h-auto w-full rounded"
-                          }
-                        />
-                      ))}
+                      <img
+                        key={`${imageUrl}-${index}`}
+                        src={imageUrl}
+                        alt={`${proj.title} screenshot ${index + 1}`}
+                        loading="lazy"
+                        decoding="async"
+                        className={
+                          isOpen
+                            ? "project-gallery-image"
+                            : "h-auto w-full rounded"
+                        }
+                      />
+                    ))}
                   </div>
                 )}
 
