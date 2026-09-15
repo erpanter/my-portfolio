@@ -58,9 +58,12 @@ export default function Home({ projects, photos }) {
           </h1>
 
           <p className="text-gray-400 max-w-md">
-            I am an Information Technology graduate from Nanyang Polytechnic with experience in cloud systems, automation, and AI-driven applications.
-            I have recently completed an internship at NCS, working with enterprise systems and real-world workflows.
-            I'm passionate about learning new technologies and building practical cloud-based solutions. Outside of tech, I enjoy photography as a creative outlet.
+            I am an Information Technology graduate from Nanyang Polytechnic with experience in cloud systems engineering, 
+            automation, and AI-driven applications. 
+            Through opportunities such as my internship at NCS, 
+            I have gained experience working with enterprise systems and real-world workflows. 
+            I am passionate about learning new technologies and applying them to practical solutions. 
+            Outside of technology, I enjoy photography as a creative outlet.
           </p>
 
           <div className="flex gap-4 mt-6">
